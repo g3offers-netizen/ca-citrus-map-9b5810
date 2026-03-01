@@ -59,6 +59,16 @@ Dual-slider filter in top-right corner:
 - Shows live parcel count as you filter
 - Reset button to show all parcels
 
+### Owner Total Acres Filter
+Number input fields to filter by owner's total acreage:
+- **Min** and **Max** input fields (type exact values)
+- Range: 0 - 23,000 acres
+- Filter to show only parcels where owner's total holdings fall within range
+- Use cases:
+  - Min 5,000+ → Large commercial growers only
+  - Max 500 → Small/independent growers only
+  - Combine with year filter for targeted analysis
+
 ### Enhanced Tooltip
 Tooltip now displays:
 - **RV_Owner** (standardized owner name, bold)
