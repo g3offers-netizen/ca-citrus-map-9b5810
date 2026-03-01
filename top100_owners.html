@@ -20,6 +20,20 @@
             color: #888;
             margin-bottom: 20px;
         }
+        .toolbar {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .toolbar button {
+            background: #0f3460;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .toolbar button:hover { background: #1a4a80; }
         .stats {
             display: flex;
             justify-content: center;
@@ -43,7 +57,7 @@
         }
         table { 
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             border-collapse: collapse;
             background: #16213e;
@@ -53,12 +67,12 @@
         th { 
             background: #0f3460;
             color: #ff9500;
-            padding: 12px 15px;
+            padding: 12px 10px;
             text-align: left;
             font-weight: 600;
         }
         td { 
-            padding: 10px 15px;
+            padding: 8px 10px;
             border-bottom: 1px solid #2a2a4a;
         }
         tr:hover { background: #1f2b4a; }
@@ -72,11 +86,31 @@
             text-align: right;
             color: #888;
         }
-        .owner { max-width: 300px; }
+        .owner { max-width: 280px; font-size: 13px; }
         .address { 
             color: #aaa;
+            font-size: 12px;
+            max-width: 220px;
+        }
+        .rv-owner {
+            width: 200px;
+        }
+        .rv-owner input {
+            width: 100%;
+            background: #1a1a2e;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 4px;
             font-size: 13px;
-            max-width: 250px;
+        }
+        .rv-owner input:focus {
+            border-color: #ff9500;
+            outline: none;
+        }
+        .rv-owner input.edited {
+            border-color: #4ade80;
+            background: #1a2e1a;
         }
         .top3 { background: #1f2b4a; }
         .top3 .rank { color: #ff9500; font-weight: bold; }
@@ -85,6 +119,12 @@
 <body>
     <h1>🍊 Top 100 California Citrus Owners</h1>
     <p class="subtitle">By total acreage • Source: LandIQ 2024 + County Parcel Data</p>
+    
+    <div class="toolbar">
+        <button onclick="exportCSV()">📥 Export CSV</button>
+        <button onclick="clearEdits()">🗑️ Clear Edits</button>
+        <span id="saveStatus" style="color: #4ade80; margin-left: 15px;"></span>
+    </div>
     
     <div class="stats">
         <div class="stat-box">
@@ -105,6 +145,7 @@
         <tr>
             <th class="rank">#</th>
             <th class="owner">Owner Name</th>
+            <th class="rv-owner">Rv_Owner (Editable)</th>
             <th class="address">Mailing Address</th>
             <th class="parcels">Parcels</th>
             <th class="acres">Acres</th>
@@ -112,6 +153,7 @@
         <tr class="top3">
             <td class="rank">1</td>
             <td class="owner">WONDERFUL CITRUS II LLC</td>
+            <td class="rv-owner"><input type="text" data-key="5001 CALIFORNIA AVE STE 230" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">5001 CALIFORNIA AVE STE 230</td>
             <td class="parcels">566</td>
             <td class="acres">20,215</td>
@@ -119,6 +161,7 @@
         <tr class="top3">
             <td class="rank">2</td>
             <td class="owner">MILLWOOD RANCH CO LTD</td>
+            <td class="rv-owner"><input type="text" data-key="33374 LERDO HWY" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">33374 LERDO HWY</td>
             <td class="parcels">654</td>
             <td class="acres">16,175</td>
@@ -126,6 +169,7 @@
         <tr class="top3">
             <td class="rank">3</td>
             <td class="owner">BOOTH RANCHES LLC</td>
+            <td class="rv-owner"><input type="text" data-key="12201 AVE 480" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">12201 AVE 480</td>
             <td class="parcels">348</td>
             <td class="acres">5,478</td>
@@ -133,6 +177,7 @@
         <tr class="">
             <td class="rank">4</td>
             <td class="owner">DENKEN FARMS</td>
+            <td class="rv-owner"><input type="text" data-key="8570 S CEDAR AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">8570 S CEDAR AVE</td>
             <td class="parcels">194</td>
             <td class="acres">4,374</td>
@@ -140,6 +185,7 @@
         <tr class="">
             <td class="rank">5</td>
             <td class="owner">BRITZ INC; SUNWEST FRUIT CO INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 9050" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 9050</td>
             <td class="parcels">241</td>
             <td class="acres">4,106</td>
@@ -147,6 +193,7 @@
         <tr class="">
             <td class="rank">6</td>
             <td class="owner">ACMPC CALIFORNIA 5 LLC</td>
+            <td class="rv-owner"><input type="text" data-key="8080 N PALM AVE STE 101" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">8080 N PALM AVE STE 101</td>
             <td class="parcels">261</td>
             <td class="acres">3,629</td>
@@ -154,6 +201,7 @@
         <tr class="">
             <td class="rank">7</td>
             <td class="owner">GLESS FAMILY TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="1441 RAVENSWOOD LN" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1441 RAVENSWOOD LN</td>
             <td class="parcels">102</td>
             <td class="acres">3,327</td>
@@ -161,6 +209,7 @@
         <tr class="">
             <td class="rank">8</td>
             <td class="owner">MOUNTAIN VIEW CITRUS LLC</td>
+            <td class="rv-owner"><input type="text" data-key="2141 HWY 224 E" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2141 HWY 224 E</td>
             <td class="parcels">230</td>
             <td class="acres">3,109</td>
@@ -168,6 +217,7 @@
         <tr class="">
             <td class="rank">9</td>
             <td class="owner">KERN RANCH</td>
+            <td class="rv-owner"><input type="text" data-key="150 W PINE ST" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">150 W PINE ST</td>
             <td class="parcels">177</td>
             <td class="acres">2,976</td>
@@ -175,6 +225,7 @@
         <tr class="">
             <td class="rank">10</td>
             <td class="owner">FAMOSO HILLS RANCH LLC</td>
+            <td class="rv-owner"><input type="text" data-key="1903 MINERAL CT" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1903 MINERAL CT</td>
             <td class="parcels">170</td>
             <td class="acres">2,811</td>
@@ -182,6 +233,7 @@
         <tr class="">
             <td class="rank">11</td>
             <td class="owner">BEE SWEET CITRUS INC</td>
+            <td class="rv-owner"><input type="text" data-key="416 E S AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">416 E S AVE</td>
             <td class="parcels">161</td>
             <td class="acres">2,546</td>
@@ -189,6 +241,7 @@
         <tr class="">
             <td class="rank">12</td>
             <td class="owner">LIMONEIRA GROVES INC</td>
+            <td class="rv-owner"><input type="text" data-key="1141 CUMMINGS RD" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1141 CUMMINGS RD</td>
             <td class="parcels">188</td>
             <td class="acres">2,343</td>
@@ -196,6 +249,7 @@
         <tr class="">
             <td class="rank">13</td>
             <td class="owner">FLS ENTERPRISES LLC</td>
+            <td class="rv-owner"><input type="text" data-key="20191 AVE 128" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">20191 AVE 128</td>
             <td class="parcels">153</td>
             <td class="acres">2,217</td>
@@ -203,6 +257,7 @@
         <tr class="">
             <td class="rank">14</td>
             <td class="owner">ROCKY HILL INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 175" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 175</td>
             <td class="parcels">156</td>
             <td class="acres">2,117</td>
@@ -210,6 +265,7 @@
         <tr class="">
             <td class="rank">15</td>
             <td class="owner">PAI HILLS VALLEY RANCHES LLC</td>
+            <td class="rv-owner"><input type="text" data-key="7108 N FRESNO ST STE 400" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">7108 N FRESNO ST STE 400</td>
             <td class="parcels">88</td>
             <td class="acres">1,923</td>
@@ -217,6 +273,7 @@
         <tr class="">
             <td class="rank">16</td>
             <td class="owner">CALCLEM LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 1260" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 1260</td>
             <td class="parcels">37</td>
             <td class="acres">1,777</td>
@@ -224,6 +281,7 @@
         <tr class="">
             <td class="rank">17</td>
             <td class="owner">D & D LAND CO LLC</td>
+            <td class="rv-owner"><input type="text" data-key="21083 E TRIMMER SPRINGS RD" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">21083 E TRIMMER SPRINGS RD</td>
             <td class="parcels">140</td>
             <td class="acres">1,615</td>
@@ -231,6 +289,7 @@
         <tr class="">
             <td class="rank">18</td>
             <td class="owner">U S A WPRS</td>
+            <td class="rv-owner"><input type="text" data-key="2800 COTTAGE WAY" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2800 COTTAGE WAY</td>
             <td class="parcels">128</td>
             <td class="acres">1,500</td>
@@ -238,6 +297,7 @@
         <tr class="">
             <td class="rank">19</td>
             <td class="owner">BERESFORD CORPORATION</td>
+            <td class="rv-owner"><input type="text" data-key="582 MARKET ST STE 912" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">582 MARKET ST STE 912</td>
             <td class="parcels">162</td>
             <td class="acres">1,465</td>
@@ -245,6 +305,7 @@
         <tr class="">
             <td class="rank">20</td>
             <td class="owner">ZIMMERMAN LINDA (SCSR TR)(Z FAM TR)</td>
+            <td class="rv-owner"><input type="text" data-key="7475 STAR PINE CIR" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">7475 STAR PINE CIR</td>
             <td class="parcels">27</td>
             <td class="acres">1,431</td>
@@ -252,6 +313,7 @@
         <tr class="">
             <td class="rank">21</td>
             <td class="owner">HOLMES CURTIS A & VALERIE LEE HOLMES TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="1665 E MANNING AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1665 E MANNING AVE</td>
             <td class="parcels">44</td>
             <td class="acres">1,368</td>
@@ -259,6 +321,7 @@
         <tr class="">
             <td class="rank">22</td>
             <td class="owner">COVE RANCHES LP</td>
+            <td class="rv-owner"><input type="text" data-key="2216 W HYDE AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2216 W HYDE AVE</td>
             <td class="parcels">101</td>
             <td class="acres">1,344</td>
@@ -266,6 +329,7 @@
         <tr class="">
             <td class="rank">23</td>
             <td class="owner">DJGJ FAMILY L P</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 65" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 65</td>
             <td class="parcels">80</td>
             <td class="acres">1,296</td>
@@ -273,6 +337,7 @@
         <tr class="">
             <td class="rank">24</td>
             <td class="owner">WILEMAN BROS & ELLIOT INC</td>
+            <td class="rv-owner"><input type="text" data-key="40232 RD 128" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">40232 RD 128</td>
             <td class="parcels">122</td>
             <td class="acres">1,232</td>
@@ -280,6 +345,7 @@
         <tr class="">
             <td class="rank">25</td>
             <td class="owner">OFS RANCH LP</td>
+            <td class="rv-owner"><input type="text" data-key="10103 HWY 166 # A" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">10103 HWY 166 # A</td>
             <td class="parcels">47</td>
             <td class="acres">1,211</td>
@@ -287,6 +353,7 @@
         <tr class="">
             <td class="rank">26</td>
             <td class="owner">HARRIS FARMS INC</td>
+            <td class="rv-owner"><input type="text" data-key="23300 W OAKLAND AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">23300 W OAKLAND AVE</td>
             <td class="parcels">81</td>
             <td class="acres">1,203</td>
@@ -294,6 +361,7 @@
         <tr class="">
             <td class="rank">27</td>
             <td class="owner">UNITED CALIFORNIA CITRUS EAST INC</td>
+            <td class="rv-owner"><input type="text" data-key="19716 E TRIMMER SPRINGS RD" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">19716 E TRIMMER SPRINGS RD</td>
             <td class="parcels">28</td>
             <td class="acres">1,051</td>
@@ -301,6 +369,7 @@
         <tr class="">
             <td class="rank">28</td>
             <td class="owner">HRONIS LAND COMPANY GP</td>
+            <td class="rv-owner"><input type="text" data-key="10443 HRONIS RD" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">10443 HRONIS RD</td>
             <td class="parcels">57</td>
             <td class="acres">1,001</td>
@@ -308,6 +377,7 @@
         <tr class="">
             <td class="rank">29</td>
             <td class="owner">COTTER, JAMES J; JAMES J COTTER LIVING TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="5995 SEPULVEDA BLVD STE 300" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">5995 SEPULVEDA BLVD STE 300</td>
             <td class="parcels">73</td>
             <td class="acres">972</td>
@@ -315,6 +385,7 @@
         <tr class="">
             <td class="rank">30</td>
             <td class="owner">FISHER JOHN N IV LIVING TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="33523 POND RD" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">33523 POND RD</td>
             <td class="parcels">84</td>
             <td class="acres">969</td>
@@ -322,6 +393,7 @@
         <tr class="">
             <td class="rank">31</td>
             <td class="owner">GOLD CREEK FARMS LP</td>
+            <td class="rv-owner"><input type="text" data-key="2437 SW COTTONWOOD CIR" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2437 SW COTTONWOOD CIR</td>
             <td class="parcels">83</td>
             <td class="acres">957</td>
@@ -329,6 +401,7 @@
         <tr class="">
             <td class="rank">32</td>
             <td class="owner">NICKEL FAMILY LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 60679" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 60679</td>
             <td class="parcels">54</td>
             <td class="acres">955</td>
@@ -336,6 +409,7 @@
         <tr class="">
             <td class="rank">33</td>
             <td class="owner">SE LAND LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 964" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 964</td>
             <td class="parcels">57</td>
             <td class="acres">908</td>
@@ -343,6 +417,7 @@
         <tr class="">
             <td class="rank">34</td>
             <td class="owner">BAILEY LEE C & ROBERTA G (TRS 2005 REV TR</td>
+            <td class="rv-owner"><input type="text" data-key="12737 AVE 452" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">12737 AVE 452</td>
             <td class="parcels">113</td>
             <td class="acres">862</td>
@@ -350,6 +425,7 @@
         <tr class="">
             <td class="rank">35</td>
             <td class="owner">LO BUE RANCHES</td>
+            <td class="rv-owner"><input type="text" data-key="201 S SWEETBRIAR AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">201 S SWEETBRIAR AVE</td>
             <td class="parcels">60</td>
             <td class="acres">819</td>
@@ -357,6 +433,7 @@
         <tr class="">
             <td class="rank">36</td>
             <td class="owner">MORENO, TRINIDAD MACIAS; MACIAS, ANGELICA MARIA</td>
+            <td class="rv-owner"><input type="text" data-key="13301 AVE 428" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">13301 AVE 428</td>
             <td class="parcels">101</td>
             <td class="acres">813</td>
@@ -364,6 +441,7 @@
         <tr class="">
             <td class="rank">37</td>
             <td class="owner">CAIRNS DAVID A & CAROL L(TRS)</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 44259" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 44259</td>
             <td class="parcels">74</td>
             <td class="acres">802</td>
@@ -371,6 +449,7 @@
         <tr class="">
             <td class="rank">38</td>
             <td class="owner">SHANNON FORD LLC</td>
+            <td class="rv-owner"><input type="text" data-key="11878 AVE 328" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">11878 AVE 328</td>
             <td class="parcels">57</td>
             <td class="acres">785</td>
@@ -378,6 +457,7 @@
         <tr class="">
             <td class="rank">39</td>
             <td class="owner">VISALIA CITRUS PACKING GROUP INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 2800" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 2800</td>
             <td class="parcels">78</td>
             <td class="acres">761</td>
@@ -385,6 +465,7 @@
         <tr class="">
             <td class="rank">40</td>
             <td class="owner">COROTTO CO INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 2437" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 2437</td>
             <td class="parcels">37</td>
             <td class="acres">718</td>
@@ -392,6 +473,7 @@
         <tr class="">
             <td class="rank">41</td>
             <td class="owner">HOGWALLOW FARMS</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 44066" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 44066</td>
             <td class="parcels">116</td>
             <td class="acres">716</td>
@@ -399,6 +481,7 @@
         <tr class="">
             <td class="rank">42</td>
             <td class="owner">BLUE BANNER CO INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 1350" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 1350</td>
             <td class="parcels">46</td>
             <td class="acres">704</td>
@@ -406,6 +489,7 @@
         <tr class="">
             <td class="rank">43</td>
             <td class="owner">R-7 ENTERPRISES</td>
+            <td class="rv-owner"><input type="text" data-key="39237 RD 172" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">39237 RD 172</td>
             <td class="parcels">76</td>
             <td class="acres">679</td>
@@ -413,6 +497,7 @@
         <tr class="">
             <td class="rank">44</td>
             <td class="owner">HILL CLARENCE H (TR) (REV TR)</td>
+            <td class="rv-owner"><input type="text" data-key="2480 W CRESCENT AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2480 W CRESCENT AVE</td>
             <td class="parcels">58</td>
             <td class="acres">679</td>
@@ -420,6 +505,7 @@
         <tr class="">
             <td class="rank">45</td>
             <td class="owner">SIEGEL 1984 TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="15651 CANON DR" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">15651 CANON DR</td>
             <td class="parcels">54</td>
             <td class="acres">675</td>
@@ -427,6 +513,7 @@
         <tr class="">
             <td class="rank">46</td>
             <td class="owner">SOUTH HILL PARTNERS</td>
+            <td class="rv-owner"><input type="text" data-key="24780 E S AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">24780 E S AVE</td>
             <td class="parcels">65</td>
             <td class="acres">661</td>
@@ -434,6 +521,7 @@
         <tr class="">
             <td class="rank">47</td>
             <td class="owner">MINDA CORP</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 366" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 366</td>
             <td class="parcels">28</td>
             <td class="acres">653</td>
@@ -441,6 +529,7 @@
         <tr class="">
             <td class="rank">48</td>
             <td class="owner">KAUSEN FARM PROPERTIES LP</td>
+            <td class="rv-owner"><input type="text" data-key="175 HIGH SIERRA DR" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">175 HIGH SIERRA DR</td>
             <td class="parcels">62</td>
             <td class="acres">652</td>
@@ -448,6 +537,7 @@
         <tr class="">
             <td class="rank">49</td>
             <td class="owner">M PARK INC</td>
+            <td class="rv-owner"><input type="text" data-key="630 W RAILROAD AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">630 W RAILROAD AVE</td>
             <td class="parcels">38</td>
             <td class="acres">650</td>
@@ -455,6 +545,7 @@
         <tr class="">
             <td class="rank">50</td>
             <td class="owner">PCF ARVIN LLC</td>
+            <td class="rv-owner"><input type="text" data-key="156 5TH AVE STE 804" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">156 5TH AVE STE 804</td>
             <td class="parcels">43</td>
             <td class="acres">649</td>
@@ -462,6 +553,7 @@
         <tr class="">
             <td class="rank">51</td>
             <td class="owner">PELTZER GROVES</td>
+            <td class="rv-owner"><input type="text" data-key="34286 RD 188" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">34286 RD 188</td>
             <td class="parcels">54</td>
             <td class="acres">631</td>
@@ -469,6 +561,7 @@
         <tr class="">
             <td class="rank">52</td>
             <td class="owner">LASSEN FARMS LLC</td>
+            <td class="rv-owner"><input type="text" data-key="144 W LAKE AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">144 W LAKE AVE</td>
             <td class="parcels">31</td>
             <td class="acres">615</td>
@@ -476,6 +569,7 @@
         <tr class="">
             <td class="rank">53</td>
             <td class="owner">MARY E MELING FAMILY LTD PARTNERSHIP THE</td>
+            <td class="rv-owner"><input type="text" data-key="425 N MONTGOMERY CT" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">425 N MONTGOMERY CT</td>
             <td class="parcels">57</td>
             <td class="acres">567</td>
@@ -483,6 +577,7 @@
         <tr class="">
             <td class="rank">54</td>
             <td class="owner">SEGAL GEORGE REV TR</td>
+            <td class="rv-owner"><input type="text" data-key="5100 CALIFORNIA AVE STE 234" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">5100 CALIFORNIA AVE STE 234</td>
             <td class="parcels">11</td>
             <td class="acres">565</td>
@@ -490,6 +585,7 @@
         <tr class="">
             <td class="rank">55</td>
             <td class="owner">SUNSHINE AGRICULTURE INC</td>
+            <td class="rv-owner"><input type="text" data-key="7108 N FRESNO ST STE 401" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">7108 N FRESNO ST STE 401</td>
             <td class="parcels">14</td>
             <td class="acres">539</td>
@@ -497,6 +593,7 @@
         <tr class="">
             <td class="rank">56</td>
             <td class="owner">ACADEMY RANCH LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 1079" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 1079</td>
             <td class="parcels">38</td>
             <td class="acres">511</td>
@@ -504,6 +601,7 @@
         <tr class="">
             <td class="rank">57</td>
             <td class="owner">BROWN, DAVID A; BROWN, JILL A</td>
+            <td class="rv-owner"><input type="text" data-key="9347 S HILLS VALLEY RD" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">9347 S HILLS VALLEY RD</td>
             <td class="parcels">43</td>
             <td class="acres">510</td>
@@ -511,6 +609,7 @@
         <tr class="">
             <td class="rank">58</td>
             <td class="owner">RF CITRUS RANCHES LLC</td>
+            <td class="rv-owner"><input type="text" data-key="11444 W OLYMPIC BLVD FL 10" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">11444 W OLYMPIC BLVD FL 10</td>
             <td class="parcels">20</td>
             <td class="acres">509</td>
@@ -518,6 +617,7 @@
         <tr class="">
             <td class="rank">59</td>
             <td class="owner">WATERMAN (CA) LLC</td>
+            <td class="rv-owner"><input type="text" data-key="4600 S SYRACUSE ST STE STE 1450" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">4600 S SYRACUSE ST STE STE 1450</td>
             <td class="parcels">28</td>
             <td class="acres">509</td>
@@ -525,6 +625,7 @@
         <tr class="">
             <td class="rank">60</td>
             <td class="owner">BENNETT ORGANICS OWNER LLC</td>
+            <td class="rv-owner"><input type="text" data-key="1111 E HERNDON AVE STE 109" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1111 E HERNDON AVE STE 109</td>
             <td class="parcels">6</td>
             <td class="acres">508</td>
@@ -532,6 +633,7 @@
         <tr class="">
             <td class="rank">61</td>
             <td class="owner">OROSI PREMIUM CITRUS LLC</td>
+            <td class="rv-owner"><input type="text" data-key="6700 FALLBROOK AVE STE 294" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">6700 FALLBROOK AVE STE 294</td>
             <td class="parcels">32</td>
             <td class="acres">507</td>
@@ -539,6 +641,7 @@
         <tr class="">
             <td class="rank">62</td>
             <td class="owner">BULDO JUDITH(TR)(JB SURV TR)</td>
+            <td class="rv-owner"><input type="text" data-key="111 E ALMA AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">111 E ALMA AVE</td>
             <td class="parcels">49</td>
             <td class="acres">498</td>
@@ -546,6 +649,7 @@
         <tr class="">
             <td class="rank">63</td>
             <td class="owner">WADDELL ERIC C (TR)(EW TR)</td>
+            <td class="rv-owner"><input type="text" data-key="3825 E HOWARD AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">3825 E HOWARD AVE</td>
             <td class="parcels">50</td>
             <td class="acres">497</td>
@@ -553,6 +657,7 @@
         <tr class="">
             <td class="rank">64</td>
             <td class="owner">DEER CREEK CITRUS LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 11089" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 11089</td>
             <td class="parcels">79</td>
             <td class="acres">484</td>
@@ -560,6 +665,7 @@
         <tr class="">
             <td class="rank">65</td>
             <td class="owner">DONALD C MC CARTHY LP</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 2010" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 2010</td>
             <td class="parcels">50</td>
             <td class="acres">483</td>
@@ -567,6 +673,7 @@
         <tr class="">
             <td class="rank">66</td>
             <td class="owner">US HORTICULTURE FARMLAND LLC</td>
+            <td class="rv-owner"><input type="text" data-key="2004 FOX DR STE L" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2004 FOX DR STE L</td>
             <td class="parcels">11</td>
             <td class="acres">479</td>
@@ -574,6 +681,7 @@
         <tr class="">
             <td class="rank">67</td>
             <td class="owner">DLM PARTNERS</td>
+            <td class="rv-owner"><input type="text" data-key="3265 W FIGARDEN DR" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">3265 W FIGARDEN DR</td>
             <td class="parcels">32</td>
             <td class="acres">477</td>
@@ -581,6 +689,7 @@
         <tr class="">
             <td class="rank">68</td>
             <td class="owner">M PARK INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 10" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 10</td>
             <td class="parcels">39</td>
             <td class="acres">473</td>
@@ -588,6 +697,7 @@
         <tr class="">
             <td class="rank">69</td>
             <td class="owner">YELLOW DELTA II LLC</td>
+            <td class="rv-owner"><input type="text" data-key="1 EMBARCADERO CTR STE 3860" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1 EMBARCADERO CTR STE 3860</td>
             <td class="parcels">39</td>
             <td class="acres">470</td>
@@ -595,6 +705,7 @@
         <tr class="">
             <td class="rank">70</td>
             <td class="owner">RIDDLE KEVIN R & VIRGINIA ANN</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 320" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 320</td>
             <td class="parcels">48</td>
             <td class="acres">463</td>
@@ -602,6 +713,7 @@
         <tr class="">
             <td class="rank">71</td>
             <td class="owner">ARNOLD LLC</td>
+            <td class="rv-owner"><input type="text" data-key="4600 S SYRACUSE ST STE 1450" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">4600 S SYRACUSE ST STE 1450</td>
             <td class="parcels">40</td>
             <td class="acres">460</td>
@@ -609,6 +721,7 @@
         <tr class="">
             <td class="rank">72</td>
             <td class="owner">GOLDEN VALLEY CITRUS INC CA CORP</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX L" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX L</td>
             <td class="parcels">48</td>
             <td class="acres">452</td>
@@ -616,6 +729,7 @@
         <tr class="">
             <td class="rank">73</td>
             <td class="owner">MBENNETT LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 549" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 549</td>
             <td class="parcels">47</td>
             <td class="acres">452</td>
@@ -623,6 +737,7 @@
         <tr class="">
             <td class="rank">74</td>
             <td class="owner">LOPEZ RAUL SANTELLAN</td>
+            <td class="rv-owner"><input type="text" data-key="5686 MUSTANG AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">5686 MUSTANG AVE</td>
             <td class="parcels">30</td>
             <td class="acres">450</td>
@@ -630,6 +745,7 @@
         <tr class="">
             <td class="rank">75</td>
             <td class="owner">SHERWOOD DAVID ROBERT & GLENDA MAUREEN(TR</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 455" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 455</td>
             <td class="parcels">42</td>
             <td class="acres">447</td>
@@ -637,6 +753,7 @@
         <tr class="">
             <td class="rank">76</td>
             <td class="owner">SANTA PAULA HAY & GRAIN & RANCHES</td>
+            <td class="rv-owner"><input type="text" data-key="10890 N VENTURA AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">10890 N VENTURA AVE</td>
             <td class="parcels">18</td>
             <td class="acres">447</td>
@@ -644,6 +761,7 @@
         <tr class="">
             <td class="rank">77</td>
             <td class="owner">HAYHURST WALTER G & CAROL D (TRS)</td>
+            <td class="rv-owner"><input type="text" data-key="45902 RD 144" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">45902 RD 144</td>
             <td class="parcels">56</td>
             <td class="acres">439</td>
@@ -651,6 +769,7 @@
         <tr class="">
             <td class="rank">78</td>
             <td class="owner">MORGAN BILLY M & DEE LYNNA(TRS)</td>
+            <td class="rv-owner"><input type="text" data-key="3600 W MINERAL KING AVE STE #B" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">3600 W MINERAL KING AVE STE #B</td>
             <td class="parcels">38</td>
             <td class="acres">425</td>
@@ -658,6 +777,7 @@
         <tr class="">
             <td class="rank">79</td>
             <td class="owner">FUGATE BURT(TR)(THE BURT FUGATE TR)</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 5019" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 5019</td>
             <td class="parcels">55</td>
             <td class="acres">424</td>
@@ -665,6 +785,7 @@
         <tr class="">
             <td class="rank">80</td>
             <td class="owner">DENKEN FARMS</td>
+            <td class="rv-owner"><input type="text" data-key="L PARNAGIAN" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">L PARNAGIAN</td>
             <td class="parcels">26</td>
             <td class="acres">416</td>
@@ -672,6 +793,7 @@
         <tr class="">
             <td class="rank">81</td>
             <td class="owner">KIRSCHENMANN ARNOLD S SEPARATE PROP TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 20670" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 20670</td>
             <td class="parcels">16</td>
             <td class="acres">407</td>
@@ -679,6 +801,7 @@
         <tr class="">
             <td class="rank">82</td>
             <td class="owner">WONDERFUL NUT ORCHARDS LLC</td>
+            <td class="rv-owner"><input type="text" data-key="6801 E LERDO HWY" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">6801 E LERDO HWY</td>
             <td class="parcels">13</td>
             <td class="acres">396</td>
@@ -686,6 +809,7 @@
         <tr class="">
             <td class="rank">83</td>
             <td class="owner">CENTRAL VALLEY MANAGEMENT</td>
+            <td class="rv-owner"><input type="text" data-key="36040 RD 172" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">36040 RD 172</td>
             <td class="parcels">54</td>
             <td class="acres">393</td>
@@ -693,6 +817,7 @@
         <tr class="">
             <td class="rank">84</td>
             <td class="owner">HERMOSA TIERRA INC</td>
+            <td class="rv-owner"><input type="text" data-key="16595 COYOTE DR" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">16595 COYOTE DR</td>
             <td class="parcels">30</td>
             <td class="acres">388</td>
@@ -700,6 +825,7 @@
         <tr class="">
             <td class="rank">85</td>
             <td class="owner">HENRY FARM LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 26085" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 26085</td>
             <td class="parcels">16</td>
             <td class="acres">388</td>
@@ -707,6 +833,7 @@
         <tr class="">
             <td class="rank">86</td>
             <td class="owner">SAMTONE RANCH LLC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 2097" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 2097</td>
             <td class="parcels">43</td>
             <td class="acres">385</td>
@@ -714,6 +841,7 @@
         <tr class="">
             <td class="rank">87</td>
             <td class="owner">PARAMOUNT RANCH CO</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 9729" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 9729</td>
             <td class="parcels">6</td>
             <td class="acres">383</td>
@@ -721,6 +849,7 @@
         <tr class="">
             <td class="rank">88</td>
             <td class="owner">BAKER MARK D(TR)(MDB REV TR)</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 128" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 128</td>
             <td class="parcels">36</td>
             <td class="acres">379</td>
@@ -728,6 +857,7 @@
         <tr class="">
             <td class="rank">89</td>
             <td class="owner">VANDERHAM DENNIS & YVONNE(TRS)(V FAM REV</td>
+            <td class="rv-owner"><input type="text" data-key="15625 AVE 144" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">15625 AVE 144</td>
             <td class="parcels">32</td>
             <td class="acres">376</td>
@@ -735,6 +865,7 @@
         <tr class="">
             <td class="rank">90</td>
             <td class="owner">CARATAN LUKE 2011 TRUST</td>
+            <td class="rv-owner"><input type="text" data-key="33787 CECIL AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">33787 CECIL AVE</td>
             <td class="parcels">17</td>
             <td class="acres">373</td>
@@ -742,6 +873,7 @@
         <tr class="">
             <td class="rank">91</td>
             <td class="owner">BARTHULI, WALLACE D; BARTHULI, TERRY L</td>
+            <td class="rv-owner"><input type="text" data-key="16145 E MCKINLEY AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">16145 E MCKINLEY AVE</td>
             <td class="parcels">31</td>
             <td class="acres">373</td>
@@ -749,6 +881,7 @@
         <tr class="">
             <td class="rank">92</td>
             <td class="owner">MAC RANCHES</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 2732" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 2732</td>
             <td class="parcels">29</td>
             <td class="acres">370</td>
@@ -756,6 +889,7 @@
         <tr class="">
             <td class="rank">93</td>
             <td class="owner">SUN WOLF PARTNERS GP</td>
+            <td class="rv-owner"><input type="text" data-key="900 W GRAND AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">900 W GRAND AVE</td>
             <td class="parcels">24</td>
             <td class="acres">370</td>
@@ -763,6 +897,7 @@
         <tr class="">
             <td class="rank">94</td>
             <td class="owner">WOLLENMAN JOSEPH M & MAXINE M(TRS)(FAM RE</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 368" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 368</td>
             <td class="parcels">53</td>
             <td class="acres">369</td>
@@ -770,6 +905,7 @@
         <tr class="">
             <td class="rank">95</td>
             <td class="owner">LA SILLA INVESTMENTS INC</td>
+            <td class="rv-owner"><input type="text" data-key="2752 FLORENCE AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">2752 FLORENCE AVE</td>
             <td class="parcels">30</td>
             <td class="acres">366</td>
@@ -777,6 +913,7 @@
         <tr class="">
             <td class="rank">96</td>
             <td class="owner">BROADVIEW CITRUS GROVES</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 1368" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 1368</td>
             <td class="parcels">42</td>
             <td class="acres">357</td>
@@ -784,6 +921,7 @@
         <tr class="">
             <td class="rank">97</td>
             <td class="owner">BAILEY, JUDITH A; HARVEY AND JUDITH BAILEY 2005 FMTR</td>
+            <td class="rv-owner"><input type="text" data-key="4350 COVE AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">4350 COVE AVE</td>
             <td class="parcels">34</td>
             <td class="acres">353</td>
@@ -791,6 +929,7 @@
         <tr class="">
             <td class="rank">98</td>
             <td class="owner">PAR CITRUS HOLDINGS LLC</td>
+            <td class="rv-owner"><input type="text" data-key="1356 S BUTTONWILLOW AVE" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">1356 S BUTTONWILLOW AVE</td>
             <td class="parcels">27</td>
             <td class="acres">349</td>
@@ -798,6 +937,7 @@
         <tr class="">
             <td class="rank">99</td>
             <td class="owner">LEE, KEN; LEE, DIANA</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 208" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 208</td>
             <td class="parcels">45</td>
             <td class="acres">346</td>
@@ -805,10 +945,75 @@
         <tr class="">
             <td class="rank">100</td>
             <td class="owner">SPALDING RANCHES INC</td>
+            <td class="rv-owner"><input type="text" data-key="PO BOX 668" onchange="saveEdit(this)" placeholder="Enter revised name..."></td>
             <td class="address">PO BOX 668</td>
             <td class="parcels">37</td>
             <td class="acres">344</td>
         </tr>
     </table>
+
+<script>
+// Load saved edits on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const edits = JSON.parse(localStorage.getItem('citrusOwnerEdits') || '{}');
+    document.querySelectorAll('.rv-owner input').forEach(input => {
+        const key = input.dataset.key;
+        if (edits[key]) {
+            input.value = edits[key];
+            input.classList.add('edited');
+        }
+    });
+    updateStatus();
+});
+
+function saveEdit(input) {
+    const edits = JSON.parse(localStorage.getItem('citrusOwnerEdits') || '{}');
+    const key = input.dataset.key;
+    if (input.value.trim()) {
+        edits[key] = input.value.trim();
+        input.classList.add('edited');
+    } else {
+        delete edits[key];
+        input.classList.remove('edited');
+    }
+    localStorage.setItem('citrusOwnerEdits', JSON.stringify(edits));
+    updateStatus();
+}
+
+function updateStatus() {
+    const edits = JSON.parse(localStorage.getItem('citrusOwnerEdits') || '{}');
+    const count = Object.keys(edits).length;
+    document.getElementById('saveStatus').textContent = count > 0 ? `✓ ${count} edits saved` : '';
+}
+
+function clearEdits() {
+    if (confirm('Clear all Rv_Owner edits?')) {
+        localStorage.removeItem('citrusOwnerEdits');
+        document.querySelectorAll('.rv-owner input').forEach(input => {
+            input.value = '';
+            input.classList.remove('edited');
+        });
+        updateStatus();
+    }
+}
+
+function exportCSV() {
+    const edits = JSON.parse(localStorage.getItem('citrusOwnerEdits') || '{}');
+    let csv = 'Rank,Owner,Rv_Owner,Mailing_Address,Parcels,Acres\n';
+    document.querySelectorAll('table tr').forEach((row, i) => {
+        if (i === 0) return; // skip header
+        const cells = row.querySelectorAll('td');
+        const input = row.querySelector('input');
+        const rvOwner = input ? (input.value || '') : '';
+        csv += `${cells[0].textContent},"${cells[1].textContent}","${rvOwner}","${cells[3].textContent}",${cells[4].textContent},${cells[5].textContent}\n`;
+    });
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'top100_citrus_owners.csv';
+    a.click();
+}
+</script>
 </body>
 </html>
